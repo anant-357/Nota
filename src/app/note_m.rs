@@ -2,6 +2,7 @@ pub mod note {
     use chrono::{DateTime, Utc};
     use serde::{Deserialize, Serialize};
     use std::fmt::{self};
+    use std::io::{self, Write};
 
     #[derive(Serialize, Deserialize, Debug, Clone)]
     pub struct Note {
@@ -46,6 +47,22 @@ pub mod note {
         pub fn change_id(&mut self, new_id: u64) {
             self.id = new_id;
         }
+
+        // pub fn new_interactive(id: u64) {
+        //     let mut note: Note = Self::new_empty(id);
+        //     print!("Title:");
+        //     let _ = io::stdout().flush();
+        //     match io::stdin().read_line(&mut note.title) {
+        //         Ok(c) => (),
+        //         Err(_) => println!("Unable to read input\n"),
+        //     };
+        //     print!("Body:");
+        //     let _ = io::stdout().flush();
+        //     match io::stdin().(&mut note.title) {
+        //         Ok(c) => (),
+        //         Err(_) => println!("Unable to read input\n"),
+        //     };
+        // }
     }
 
     impl fmt::Display for Note {

@@ -2,8 +2,12 @@ mod note_m;
 pub mod app {
     use super::note_m::note::Note;
     use serde::{Deserialize, Serialize};
+    use serde_json;
     use std::collections::HashMap;
     use std::fmt::{self};
+    use std::fs::OpenOptions;
+    use std::io::{Read, Write};
+    use std::path::Path;
 
     #[derive(Serialize, Deserialize, Debug)]
     pub struct Notes {
@@ -44,6 +48,10 @@ pub mod app {
             }
             return None;
         }
+
+        pub fn print_all_notes(&self) {
+            print!("{:#}", self);
+        }
     }
 
     impl fmt::Display for Notes {
@@ -52,6 +60,50 @@ pub mod app {
                 print!("{:^}\n\n", note);
             }
             Ok(())
+        }
+    }
+
+    pub fn get_saved_data(file: &str) -> Notes {
+        match OpenOptions::new()
+            .append(true)
+            .create(true)
+            .read(true)
+            .open(Path::new(file))
+        {
+            Ok(mut file) => {
+                let mut json_data = String::new();
+                match file.read_to_string(&mut json_data) {
+                    Ok(_) => match serde_json::from_str(json_data.as_str()) {
+                        Ok(data) => data,
+                        Err(_) => panic!("Unable to deserialize"),
+                    },
+                    Err(_) => panic!("Unable to read data"),
+                }
+            }
+            Err(_) => {
+                panic!("Unable to create or open file")
+            }
+        }
+    }
+
+    pub fn save_data(notes: Notes, file: &str) {
+        match serde_json::to_string_pretty(&notes) {
+            Ok(json_data) => {
+                match OpenOptions::new()
+                    .append(true)
+                    .create(true)
+                    .read(true)
+                    .open(Path::new(file))
+                {
+                    Ok(mut file) => {
+                        file.write_all(json_data.as_bytes()).unwrap();
+                    }
+                    Err(_) => {
+                        panic!("Unable to create or open file")
+                    }
+                }
+            }
+            Err(_) => panic!("Unable to serialize data"),
         }
     }
 }

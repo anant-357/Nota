@@ -1,50 +1,37 @@
 mod app;
 use app::app::Notes;
-use serde_json;
-use std::fs::OpenOptions;
-use std::io::Read;
-use std::path::Path;
+use ratatui::{
+    backend::CrosstermBackend,
+    widgets::{Block, Borders},
+    Terminal,
+};
 
-fn get_saved_data() -> app::app::Notes {
-    match OpenOptions::new().write(true).create(true).open("data") {
-        Ok(mut file) => {
-            let mut json_data = String::new();
-            match file.read_to_string(&mut json_data) {
-                Ok(_) => match serde_json::from_str(json_data.as_str()) {
-                    Ok(data) => data,
-                    Err(_) => panic!("Unable to deserialize"),
-                },
-                Err(_) => panic!("Unable to read data"),
-            }
-        }
-        Err(_) => {
-            panic!("Unable to create or open file")
-        }
-    }
+use crossterm::{
+    event::{self, DisableMouseCapture, EnableMouseCapture},
+    execute,
+    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
+};
+use std::io;
+
+fn run_app(mut notes: Notes) {
+    let stdout = io::stdout();
+    let backend = CrosstermBackend::new(stdout);
+    let mut terminal = match Terminal::new(backend) {
+        Ok(t) => t,
+        Err(_) => panic!("Unable to create terminal"),
+    };
+    terminal
+        .draw(|f| {
+            let size = f.size();
+            let block = Block::default().title("Block").borders(Borders::ALL);
+            f.render_widget(block, size);
+        })
+        .unwrap();
+    loop {}
 }
 
-fn main() {
-    let notes: Notes = get_saved_data();
-    println!("{:#}", notes);
+fn main() -> Result<(), io::Error> {
+    let notes: Notes = app::app::get_saved_data("data.txt");
+    run_app(notes);
+    Ok(())
 }
-
-// let mut app: Notes = serde_json::from_str().unwrap();
-// let t = vec![String::from("bio"), String::from("phy")];
-// app.add_note(NoteM::Note::new_full(
-//     1,
-//     "Hello".to_string(),
-//     "Body".to_string(),
-//     t,
-// ));
-// let t2 = vec![String::from("chem"), String::from("shreya")];
-
-// app.add_note(NoteM::Note::new_full(
-//     1,
-//     "Hello2".to_string(),
-//     "Body2".to_string(),
-//     t2,
-// ));
-// let serialized_app = serde_json::to_string(&app).unwrap();
-
-// println!("{}\n{}", app, app.get_note(2).unwrap());
-// println!("{:#?}", serialized_app);
