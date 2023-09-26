@@ -1,12 +1,11 @@
-pub mod note {
+
     use chrono::{DateTime, Utc};
     use serde::{Deserialize, Serialize};
     use std::fmt::{self};
-    use std::io::{self, Write};
 
     #[derive(Serialize, Deserialize, Debug, Clone)]
     pub struct Note {
-        pub id: u64,
+        pub id: usize,
         pub title: String,
         pub body: String,
         pub dob: DateTime<Utc>,
@@ -14,9 +13,9 @@ pub mod note {
     }
 
     impl Note {
-        pub fn new_empty(id: u64) -> Self {
+        pub fn new_empty(id: usize) -> Self {
             Self {
-                id: id,
+                id,
                 title: "".to_string(),
                 body: "".to_string(),
                 dob: Utc::now(),
@@ -24,31 +23,31 @@ pub mod note {
             }
         }
 
-        pub fn new_base(id: u64, title: String, body: String) -> Self {
+        pub fn new_base(id: usize, title: String, body: String) -> Self {
             Self {
-                id: id,
-                title: title,
-                body: body,
+                id,
+                title,
+                body,
                 dob: Utc::now(),
                 tags: Vec::new(),
             }
         }
 
-        pub fn new_full(id: u64, title: String, body: String, tags: Vec<String>) -> Self {
+        pub fn new_full(id: usize, title: String, body: String, tags: Vec<String>) -> Self {
             Self {
-                id: id,
-                title: title,
-                body: body,
+                id,
+                title,
+                body,
                 dob: Utc::now(),
-                tags: tags,
+                tags,
             }
         }
 
-        pub fn change_id(&mut self, new_id: u64) {
+        pub fn change_id(&mut self, new_id: usize) {
             self.id = new_id;
         }
 
-        // pub fn new_interactive(id: u64) {
+        // pub fn new_interactive(id: usize) {
         //     let mut note: Note = Self::new_empty(id);
         //     print!("Title:");
         //     let _ = io::stdout().flush();
@@ -77,4 +76,4 @@ pub mod note {
             Ok(())
         }
     }
-}
+

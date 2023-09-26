@@ -1,0 +1,8 @@
+{
+  "users": [
+    {
+      "username": "Shreya",
+      "password": "$2b$10$b6LQT07FbTSUV.FybpVRIOmjmjkDijDj/JzU/4PW7NpOlFdN.7/q6"
+    }
+  ]
+}

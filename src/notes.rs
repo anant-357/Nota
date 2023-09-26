@@ -1,24 +1,23 @@
-mod note_m;
-pub mod app {
-    use super::note_m::note::Note;
-    use serde::{Deserialize, Serialize};
-    use serde_json;
-    use std::collections::HashMap;
-    use std::fmt::{self};
-    use std::fs::OpenOptions;
-    use std::io::{Read, Write};
-    use std::path::Path;
+use serde::{Deserialize, Serialize};
+use serde_json;
+use std::collections::HashMap;
+use std::fmt::{self};
+use std::fs::OpenOptions;
+use std::io::{Read, Write};
+use std::path::Path;
+mod note;
+use note::Note;
 
-    #[derive(Serialize, Deserialize, Debug)]
-    pub struct Notes {
-        notes: HashMap<u64, Note>,
-        tags: Vec<String>,
-        next_id: u64,
-    }
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct Notes {
+    notes: HashMap<usize, Note>,
+    tags: Vec<String>,
+    next_id: usize,
+}
 
-    impl Notes {
-        pub fn new() -> Self {
-            Self {
+impl Notes {
+    pub fn new() -> Self {
+        Self {
                 notes: HashMap::new(),
                 tags: Vec::new(),
                 next_id: 1,
@@ -33,20 +32,26 @@ pub mod app {
             }
         }
 
-        pub fn add_note(&mut self, mut note: Note) {
+        pub fn add_note(&mut self, body: String, title: String) {
+            println!("{} {}", body, title);
+            let mut note = Note::new_base(self.next_id, title, body);
             note.change_id(self.next_id);
             self.notes.insert(note.clone().id, note.clone());
             self.update_tags(note);
             self.next_id += 1;
         }
 
-        pub fn get_note(&self, get_id: u64) -> Option<Note> {
+        pub fn get_note(&self, get_id: usize) -> Option<Note> {
             for (id, note) in &self.notes {
                 if get_id == *id {
                     return Some(note.clone());
                 }
             }
             return None;
+        }
+
+        pub fn get_all_notes(&self) -> HashMap<usize, Note> {
+            self.notes.clone()
         }
 
         pub fn print_all_notes(&self) {
@@ -86,7 +91,7 @@ pub mod app {
         }
     }
 
-    pub fn save_data(notes: Notes, file: &str) {
+pub fn save_data(notes: Notes, file: &str) {
         match serde_json::to_string_pretty(&notes) {
             Ok(json_data) => {
                 match OpenOptions::new()
@@ -104,6 +109,5 @@ pub mod app {
                 }
             }
             Err(_) => panic!("Unable to serialize data"),
-        }
+      }
     }
-}
