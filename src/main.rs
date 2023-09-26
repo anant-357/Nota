@@ -83,14 +83,14 @@ fn main() -> Result<()> {
     let mut user: String = String::new();
     println!("Enter Username to continue :");
     std::io::stdin().read_line(&mut user).expect("Unable to read user\n");
-    if users.exists(user) == -1 {
+    if users.exists(user.clone()) == -1 {
         panic!("Cannot find user\n");
     }
     println!("Enter Password :");
     let mut password: String = String::new();
     std::io::stdin().read_line(&mut password).expect("Unable to read password\n");
 
-    users.authenticate(user, password);
+    users.authenticate(user.clone(), password);
 
     let notes: Notes = get_saved_data("data.txt");
     handle_arguments(args, notes);

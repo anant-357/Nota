@@ -29,7 +29,7 @@ impl User {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Users {
-    users: HashMap<String, User>,
+    users: Vec<User>,
 }
 
 impl Users {

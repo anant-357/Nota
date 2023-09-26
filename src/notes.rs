@@ -41,13 +41,15 @@ impl Notes {
             self.next_id += 1;
         }
 
-        pub fn get_note(&self, get_id: usize) -> Option<Note> {
+        pub fn get_note(&self, get_id: usize) -> Result<Note, &'static str> {
             for (id, note) in &self.notes {
-                if get_id == *id {
-                    return Some(note.clone());
+                match *id {
+                    get_id => return Ok(note.clone()),
+                    _ => (),
                 }
+                
             }
-            return None;
+            Err("No note with such id")
         }
 
         pub fn get_all_notes(&self) -> HashMap<usize, Note> {
